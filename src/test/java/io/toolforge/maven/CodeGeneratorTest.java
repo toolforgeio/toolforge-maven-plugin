@@ -80,7 +80,7 @@ public class CodeGeneratorTest {
       javaFile.writeTo(w);
       observed = w.toString();
     }
-
+    
     String expected = Resources.toString(Resources.getResource("com/example/Configuration.java"),
         StandardCharsets.UTF_8);
 

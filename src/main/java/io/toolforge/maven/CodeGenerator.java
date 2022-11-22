@@ -2,7 +2,6 @@ package io.toolforge.maven;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
-import java.net.URI;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.Collections;
@@ -39,6 +38,8 @@ import io.toolforge.spi.model.ToolOutput;
 import io.toolforge.spi.model.expr.date.AbsoluteDateExpr;
 import io.toolforge.spi.model.expr.date.RelativeDateExpr;
 import io.toolforge.spi.model.expr.date.TodayDateExpr;
+import io.toolforge.toolforge4j.io.InputSource;
+import io.toolforge.toolforge4j.io.OutputSink;
 
 public class CodeGenerator {
   public static CodeBlock TODAY = CodeBlock.of("$T.now($T.UTC)", LocalDate.class, ZoneOffset.class);
@@ -91,7 +92,7 @@ public class CodeGenerator {
   }
 
   protected FieldSpec generateInputField(ToolInput input) {
-    return FieldSpec.builder(URI.class, input.getName(), Modifier.PUBLIC)
+    return FieldSpec.builder(InputSource.class, input.getName(), Modifier.PUBLIC)
         .addAnnotation(AnnotationSpec.builder(OptionParameter.class)
             .addMember("longName", "$S", input.getName()).addMember("required", "$L", true)
             .addMember("description", CodeBlock.of("$S", input.getDescription())).build())
@@ -101,7 +102,7 @@ public class CodeGenerator {
 
   protected FieldSpec generateOutputExtensionField(ToolOutput output, String extension) {
     return FieldSpec
-        .builder(URI.class,
+        .builder(OutputSink.class,
             output.getName() + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, extension),
             Modifier.PUBLIC)
         .addAnnotation(AnnotationSpec.builder(OptionParameter.class)

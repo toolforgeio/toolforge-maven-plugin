@@ -3,13 +3,14 @@ package com.example;
 import com.sigpwned.discourse.core.annotation.Configurable;
 import com.sigpwned.discourse.core.annotation.EnvironmentParameter;
 import com.sigpwned.discourse.core.annotation.OptionParameter;
+import io.toolforge.toolforge4j.io.InputSource;
+import io.toolforge.toolforge4j.io.OutputSink;
 import java.lang.Boolean;
 import java.lang.Double;
 import java.lang.IllegalArgumentException;
 import java.lang.Long;
 import java.lang.String;
 import java.lang.SuppressWarnings;
-import java.net.URI;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.Collections;
@@ -90,21 +91,21 @@ public final class Configuration {
       required = true,
       description = "This is the first input."
   )
-  public URI input;
+  public InputSource input;
 
   @OptionParameter(
       longName = "output.csv",
       required = true,
       description = "This is the first output."
   )
-  public URI outputCsv;
+  public OutputSink outputCsv;
 
   @OptionParameter(
       longName = "output.xlsx",
       required = true,
       description = "This is the first output."
   )
-  public URI outputXlsx;
+  public OutputSink outputXlsx;
 
   public Configuration validate() {
     // No validation to do for exampleBoolean
