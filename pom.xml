@@ -67,7 +67,7 @@
         <jackson.version>2.13.4</jackson.version>
         <discourse.version>0.0.0</discourse.version>
 
-        <junit.version>4.11</junit.version>
+        <junit.version>4.13.2</junit.version>
     </properties>
 
     <build>
