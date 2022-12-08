@@ -64,7 +64,7 @@
         <toolforge.version>0.0.24</toolforge.version>
         <toolforge4j.version>0.0.0</toolforge4j.version>
         <javapoet.version>1.13.0</javapoet.version>
-        <jackson.version>2.13.4</jackson.version>
+        <jackson.version>2.14.1</jackson.version>
         <discourse.version>0.0.2</discourse.version>
 
         <junit.version>4.13.2</junit.version>
