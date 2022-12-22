@@ -36,6 +36,8 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import io.toolforge.spi.model.Manifest;
+import io.toolforge.spi.model.ManifestType;
+import io.toolforge.spi.model.ToolManifest;
 
 /**
  * Generates the graphemes.json file used by emoji4j-core
@@ -76,12 +78,17 @@ public class GenerateConfigurationMojo extends AbstractMojo {
 
     File outputDirectory = new File(basedir, this.outputDirectory);
 
-    Manifest manifest;
+    Manifest m;
     try {
-      manifest = YAML.readValue(manifestFile, Manifest.class);
+      m = YAML.readValue(manifestFile, Manifest.class);
     } catch (IOException e) {
       throw new MojoExecutionException("Failed to read manifest from " + this.manifestLocation, e);
     }
+
+    if (m.getType() != ManifestType.TOOL)
+      throw new MojoExecutionException("Expected manifest with type tool, found " + m.getType());
+
+    ToolManifest manifest = (ToolManifest) m;
 
     ClassName configurationName = ClassName.get(outputPackage, outputClassName);
 

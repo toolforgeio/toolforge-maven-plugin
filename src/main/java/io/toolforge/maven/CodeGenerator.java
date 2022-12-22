@@ -41,19 +41,19 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
 import io.toolforge.maven.com.google.common.base.CaseFormat;
 import io.toolforge.spi.model.BooleanParameterDefinition;
+import io.toolforge.spi.model.ContainerVersionSecret;
+import io.toolforge.spi.model.ContainerVersionVariable;
 import io.toolforge.spi.model.DateExpr;
 import io.toolforge.spi.model.DateParameterDefinition;
 import io.toolforge.spi.model.EnumerationStringDomain;
 import io.toolforge.spi.model.FloatParameterDefinition;
 import io.toolforge.spi.model.IntParameterDefinition;
 import io.toolforge.spi.model.Manifest;
-import io.toolforge.spi.model.ManifestEnvironmentSecret;
-import io.toolforge.spi.model.ManifestEnvironmentVariable;
 import io.toolforge.spi.model.ParameterDefinition;
 import io.toolforge.spi.model.PatternStringDomain;
+import io.toolforge.spi.model.Slot;
 import io.toolforge.spi.model.StringParameterDefinition;
-import io.toolforge.spi.model.ToolInput;
-import io.toolforge.spi.model.ToolOutput;
+import io.toolforge.spi.model.ToolManifest;
 import io.toolforge.spi.model.expr.date.AbsoluteDateExpr;
 import io.toolforge.spi.model.expr.date.RelativeDateExpr;
 import io.toolforge.spi.model.expr.date.TodayDateExpr;
@@ -72,7 +72,7 @@ public class CodeGenerator {
   /**
    * Generates a type declaration for the data fields in the given {@link Manifest}.
    */
-  public TypeSpec generateConfiguration(Manifest manifest) {
+  public TypeSpec generateConfiguration(ToolManifest manifest) {
     TypeSpec.Builder configurationBuilder = TypeSpec.classBuilder(getClassName().simpleName())
         .addModifiers(Modifier.PUBLIC, Modifier.FINAL).addAnnotation(Configurable.class);
 
@@ -84,13 +84,13 @@ public class CodeGenerator {
       generatePreparation(parameter).ifPresent(configurationBuilder::addField);
 
     if (manifest.getEnvironment() != null && manifest.getEnvironment().getVariables() != null) {
-      for (ManifestEnvironmentVariable variable : manifest.getEnvironment().getVariables()) {
+      for (ContainerVersionVariable variable : manifest.getEnvironment().getVariables()) {
         configurationBuilder.addField(generateVariableField(variable));
       }
     }
 
     if (manifest.getEnvironment() != null && manifest.getEnvironment().getSecrets() != null) {
-      for (ManifestEnvironmentSecret secret : manifest.getEnvironment().getSecrets()) {
+      for (ContainerVersionSecret secret : manifest.getEnvironment().getSecrets()) {
         configurationBuilder.addField(generateSecretField(secret));
       }
     }
@@ -98,10 +98,10 @@ public class CodeGenerator {
     for (ParameterDefinition parameter : manifest.getParameters())
       configurationBuilder.addField(generateParameterField(parameter));
 
-    for (ToolInput input : manifest.getInputs())
+    for (Slot input : manifest.getInputs())
       configurationBuilder.addField(generateInputField(input));
 
-    for (ToolOutput output : manifest.getOutputs())
+    for (Slot output : manifest.getOutputs())
       for (String extension : output.getExtensions())
         configurationBuilder.addField(generateOutputExtensionField(output, extension));
 
@@ -110,7 +110,7 @@ public class CodeGenerator {
     return configurationBuilder.build();
   }
 
-  protected FieldSpec generateInputField(ToolInput input) {
+  protected FieldSpec generateInputField(Slot input) {
     return FieldSpec.builder(InputSource.class, input.getName(), Modifier.PUBLIC)
         .addAnnotation(AnnotationSpec.builder(OptionParameter.class)
             .addMember("longName", "$S", input.getName()).addMember("required", "$L", true)
@@ -119,7 +119,7 @@ public class CodeGenerator {
 
   }
 
-  protected FieldSpec generateOutputExtensionField(ToolOutput output, String extension) {
+  protected FieldSpec generateOutputExtensionField(Slot output, String extension) {
     return FieldSpec
         .builder(OutputSink.class,
             output.getName() + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, extension),
@@ -132,7 +132,7 @@ public class CodeGenerator {
 
   }
 
-  protected FieldSpec generateVariableField(ManifestEnvironmentVariable variable) {
+  protected FieldSpec generateVariableField(ContainerVersionVariable variable) {
     return FieldSpec.builder(String.class, variable.getName(), Modifier.PUBLIC)
         .initializer(CodeBlock.of("$S", variable.getDefault()))
         .addAnnotation(AnnotationSpec.builder(EnvironmentParameter.class)
@@ -142,7 +142,7 @@ public class CodeGenerator {
         .build();
   }
 
-  protected FieldSpec generateSecretField(ManifestEnvironmentSecret variable) {
+  protected FieldSpec generateSecretField(ContainerVersionSecret variable) {
     return FieldSpec.builder(String.class, variable.getName(), Modifier.PUBLIC)
         .addAnnotation(AnnotationSpec.builder(EnvironmentParameter.class)
             .addMember("variableName", "$S", variable.getName())
@@ -254,7 +254,7 @@ public class CodeGenerator {
   }
 
 
-  protected MethodSpec generateValidateMethod(Manifest manifest) {
+  protected MethodSpec generateValidateMethod(ToolManifest manifest) {
     MethodSpec.Builder methodBuilder =
         MethodSpec.methodBuilder("validate").addModifiers(Modifier.PUBLIC).returns(getClassName());
     for (ParameterDefinition parameter : manifest.getParameters()) {

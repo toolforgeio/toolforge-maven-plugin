@@ -30,21 +30,20 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import io.toolforge.spi.model.BooleanParameterDefinition;
+import io.toolforge.spi.model.ContainerSize;
+import io.toolforge.spi.model.ContainerVersionSecret;
+import io.toolforge.spi.model.ContainerVersionVariable;
 import io.toolforge.spi.model.DateParameterDefinition;
 import io.toolforge.spi.model.EnumerationStringDomain;
 import io.toolforge.spi.model.FloatParameterDefinition;
 import io.toolforge.spi.model.IntParameterDefinition;
-import io.toolforge.spi.model.Manifest;
 import io.toolforge.spi.model.ManifestEnvironment;
-import io.toolforge.spi.model.ManifestEnvironmentSecret;
-import io.toolforge.spi.model.ManifestEnvironmentSize;
-import io.toolforge.spi.model.ManifestEnvironmentVariable;
 import io.toolforge.spi.model.ParameterType;
 import io.toolforge.spi.model.PatternStringDomain;
+import io.toolforge.spi.model.Slot;
 import io.toolforge.spi.model.StringDomainType;
 import io.toolforge.spi.model.StringParameterDefinition;
-import io.toolforge.spi.model.ToolInput;
-import io.toolforge.spi.model.ToolOutput;
+import io.toolforge.spi.model.ToolManifest;
 import io.toolforge.spi.model.expr.date.RelativeDateExpr;
 import io.toolforge.spi.model.expr.date.RelativeDateExpr.DateUnit;
 import io.toolforge.spi.model.expr.date.TodayDateExpr;
@@ -57,12 +56,7 @@ public class CodeGeneratorTest {
   public void smokeTest() throws IOException {
     ClassName className = ClassName.get("com.example", "Configuration");
 
-    Manifest manifest = new Manifest()
-        .environment(new ManifestEnvironment().size(ManifestEnvironmentSize.MEDIUM)
-            .addVariablesItem(new ManifestEnvironmentVariable().name("EXAMPLE_VARIABLE_1")
-                .required(true).description("This is variable 1.")._default("hello"))
-            .addSecretsItem(new ManifestEnvironmentSecret().name("EXAMPLE_SECRET_1").required(false)
-                .description("This is secret 1.").example("world")))
+    ToolManifest manifest = (ToolManifest) new ToolManifest()
         .addParametersItem(new BooleanParameterDefinition()._default(true)
             .type(ParameterType.BOOLEAN).name("exampleBoolean")
             .description("This is an example boolean field.").required(true))
@@ -85,10 +79,15 @@ public class CodeGeneratorTest {
             .minimum(RelativeDateExpr.of(-1, DateUnit.WEEK))
             .maximum(RelativeDateExpr.of(+1, DateUnit.WEEK)).type(ParameterType.DATE)
             .name("exampleDate").description("This is an example date field.").required(true))
-        .addInputsItem(new ToolInput().name("input").description("This is the first input.")
+        .addInputsItem(new Slot().name("input").description("This is the first input.")
             .addExtensionsItem("csv"))
-        .addOutputsItem(new ToolOutput().name("output").description("This is the first output.")
-            .addExtensionsItem("csv").addExtensionsItem("xlsx"));
+        .addOutputsItem(new Slot().name("output").description("This is the first output.")
+            .addExtensionsItem("csv").addExtensionsItem("xlsx"))
+        .environment(new ManifestEnvironment().size(ContainerSize.MEDIUM)
+            .addVariablesItem(new ContainerVersionVariable().name("EXAMPLE_VARIABLE_1")
+                .required(true).description("This is variable 1.")._default("hello"))
+            .addSecretsItem(new ContainerVersionSecret().name("EXAMPLE_SECRET_1").required(false)
+                .description("This is secret 1.").example("world")));
 
     TypeSpec configurationType = new CodeGenerator(className).generateConfiguration(manifest);
 
@@ -99,7 +98,7 @@ public class CodeGeneratorTest {
       javaFile.writeTo(w);
       observed = w.toString();
     }
-    
+
     String expected = Resources.toString(Resources.getResource("com/example/Configuration.java"),
         StandardCharsets.UTF_8);
 
