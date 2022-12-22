@@ -59,15 +59,15 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.version>3.8.6</maven.version>
-        <maven-plugin.version>3.6.4</maven-plugin.version>
+        <maven-plugin.version>3.7.0</maven-plugin.version>
         
         <toolforge.version>0.0.26</toolforge.version>
         <toolforge4j.version>0.0.0</toolforge4j.version>
         <javapoet.version>1.13.0</javapoet.version>
         <jackson.version>2.13.4</jackson.version>
-        <discourse.version>0.0.0</discourse.version>
+        <discourse.version>0.0.2</discourse.version>
 
-        <junit.version>4.11</junit.version>
+        <junit.version>4.13.2</junit.version>
     </properties>
 
     <build>
