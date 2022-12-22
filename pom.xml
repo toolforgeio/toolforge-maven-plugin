@@ -3,7 +3,7 @@
 
     <groupId>io.toolforge</groupId>
     <artifactId>toolforge-maven-plugin</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2-SNAPSHOT</version>
     <name>toolforge-maven-plugin</name>
     <inceptionYear>2022</inceptionYear>
     <description>ToolForge Maven Plugin</description>
@@ -19,7 +19,7 @@
         <connection>scm:git:ssh://git@github.com/toolforgeio/toolforge-maven-plugin.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/toolforgeio/toolforge-maven-plugin.git</developerConnection>
         <url>https://github.com/toolforgeio/toolforge-maven-plugin/tree/main</url>
-      <tag>v0.0.1</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <licenses>
