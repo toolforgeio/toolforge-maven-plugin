@@ -19,8 +19,8 @@
         <connection>scm:git:ssh://git@github.com/toolforgeio/toolforge-maven-plugin.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/toolforgeio/toolforge-maven-plugin.git</developerConnection>
         <url>https://github.com/toolforgeio/toolforge-maven-plugin/tree/main</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <licenses>
         <license>
@@ -53,14 +53,14 @@
         <system>GitHub</system>
         <url>https://github.com/toolforgeio/toolforge-maven-plugin</url>
     </issueManagement>
-    
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.version>3.8.6</maven.version>
         <maven-plugin.version>3.7.0</maven-plugin.version>
-        
+
         <toolforge.version>0.0.24</toolforge.version>
         <toolforge4j.version>0.0.0</toolforge4j.version>
         <javapoet.version>1.13.0</javapoet.version>
@@ -143,7 +143,7 @@
             <version>${maven.version}</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>io.toolforge</groupId>
             <artifactId>model</artifactId>
@@ -163,7 +163,7 @@
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
             <version>${jackson.version}</version>
-        </dependency>        
+        </dependency>
         <dependency>
             <groupId>com.squareup</groupId>
             <artifactId>javapoet</artifactId>
