@@ -111,7 +111,8 @@ public class CodeGenerator {
   }
 
   protected FieldSpec generateInputField(Slot input) {
-    return FieldSpec.builder(InputSource.class, input.getName(), Modifier.PUBLIC)
+    return FieldSpec
+        .builder(InputSource.class, parameterNameToLowerCamel(input.getName()), Modifier.PUBLIC)
         .addAnnotation(AnnotationSpec.builder(OptionParameter.class)
             .addMember("longName", "$S", input.getName()).addMember("required", "$L", true)
             .addMember("description", CodeBlock.of("$S", input.getDescription())).build())
@@ -122,7 +123,8 @@ public class CodeGenerator {
   protected FieldSpec generateOutputExtensionField(Slot output, String extension) {
     return FieldSpec
         .builder(OutputSink.class,
-            output.getName() + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, extension),
+            parameterNameToLowerCamel(output.getName())
+                + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, extension),
             Modifier.PUBLIC)
         .addAnnotation(AnnotationSpec.builder(OptionParameter.class)
             .addMember("longName", "$S", output.getName() + "." + extension)
@@ -268,7 +270,8 @@ public class CodeGenerator {
     if (parameter.getRequired()) {
       result = generateValidationLogic(parameter);
     } else {
-      result = CodeBlock.builder().beginControlFlow("if($L != null)", parameter.getName())
+      result = CodeBlock.builder()
+          .beginControlFlow("if($L != null)", parameterNameToLowerCamel(parameter.getName()))
           .add(generateValidationLogic(parameter)).endControlFlow().build();
     }
     return result;
@@ -284,13 +287,13 @@ public class CodeGenerator {
       case DATE:
         DateParameterDefinition dateParameter = (DateParameterDefinition) parameter;
         result = result
-            .beginControlFlow("if($L.isBefore($L))", parameter.getName(),
+            .beginControlFlow("if($L.isBefore($L))", parameterNameToLowerCamel(parameter.getName()),
                 generateDateExpr(dateParameter.getMinimum()))
             .addStatement(CodeBlock.of("throw new $T($S + $L)", IllegalArgumentException.class,
                 String.format("%s must be greater than or equal to ", dateParameter.getName()),
                 generateDateExpr(dateParameter.getMinimum())))
             .endControlFlow()
-            .beginControlFlow("if($L.isAfter($L))", parameter.getName(),
+            .beginControlFlow("if($L.isAfter($L))", parameterNameToLowerCamel(parameter.getName()),
                 generateDateExpr(dateParameter.getMaximum()))
             .addStatement(CodeBlock.of("throw new $T($S + $L)", IllegalArgumentException.class,
                 String.format("%s must be less than or equal to ", dateParameter.getName()),
@@ -300,12 +303,15 @@ public class CodeGenerator {
       case FLOAT:
         FloatParameterDefinition floatParameter = (FloatParameterDefinition) parameter;
         result =
-            result.beginControlFlow("if($L < $L)", parameter.getName(), floatParameter.getMinimum())
+            result
+                .beginControlFlow("if($L < $L)", parameterNameToLowerCamel(parameter.getName()),
+                    floatParameter.getMinimum())
                 .addStatement(CodeBlock.of("throw new $T($S)", IllegalArgumentException.class,
                     String.format("%s must be greater than or equal to %f",
                         floatParameter.getName(), floatParameter.getMinimum())))
                 .endControlFlow()
-                .beginControlFlow("if($L > $L)", parameter.getName(), floatParameter.getMaximum())
+                .beginControlFlow("if($L > $L)", parameterNameToLowerCamel(parameter.getName()),
+                    floatParameter.getMaximum())
                 .addStatement(
                     CodeBlock.of("throw new $T($S)", IllegalArgumentException.class,
                         String.format("%s must be less than or equal to %f",
@@ -314,19 +320,19 @@ public class CodeGenerator {
         break;
       case INT:
         IntParameterDefinition intParameter = (IntParameterDefinition) parameter;
-        result =
-            result.beginControlFlow("if($L < $L)", parameter.getName(), intParameter.getMinimum())
-                .addStatement(CodeBlock.of("throw new $T($S)", IllegalArgumentException.class,
-                    String.format("%s must be greater than or equal to %d", intParameter.getName(),
-                        intParameter.getMinimum())))
-                .endControlFlow()
-                .beginControlFlow("if($L > $L)", parameter.getName(), intParameter.getMaximum())
-                .addStatement(
-                    CodeBlock
-                        .of("throw new $T($S)", IllegalArgumentException.class,
-                            String.format("%s must be less than or equal to %d",
-                                intParameter.getName(), intParameter.getMaximum())))
-                .endControlFlow();
+        result = result
+            .beginControlFlow("if($L < $L)", parameterNameToLowerCamel(parameter.getName()),
+                intParameter.getMinimum())
+            .addStatement(CodeBlock.of("throw new $T($S)", IllegalArgumentException.class,
+                String.format("%s must be greater than or equal to %d", intParameter.getName(),
+                    intParameter.getMinimum())))
+            .endControlFlow()
+            .beginControlFlow("if($L > $L)", parameterNameToLowerCamel(parameter.getName()),
+                intParameter.getMaximum())
+            .addStatement(CodeBlock.of("throw new $T($S)", IllegalArgumentException.class,
+                String.format("%s must be less than or equal to %d", intParameter.getName(),
+                    intParameter.getMaximum())))
+            .endControlFlow();
         break;
       case STRING:
         StringParameterDefinition stringParameter = (StringParameterDefinition) parameter;
@@ -337,7 +343,7 @@ public class CodeGenerator {
             result = result
                 .beginControlFlow("if(!$L.contains($L))",
                     parameterNameToUpperUnderscore(stringParameter.getName()) + "_ENUMERATION",
-                    stringParameter.getName())
+                    parameterNameToLowerCamel(stringParameter.getName()))
                 .addStatement("throw new $T($S)", IllegalArgumentException.class,
                     String.format("%s must be one of: %s", stringParameter.getName(),
                         enumerationDomain.getValues().stream().collect(joining(", "))))
@@ -349,7 +355,7 @@ public class CodeGenerator {
                 result
                     .beginControlFlow("if(!$L.matcher($L).matches())",
                         parameterNameToUpperUnderscore(stringParameter.getName()) + "_PATTERN",
-                        stringParameter.getName())
+                        parameterNameToLowerCamel(stringParameter.getName()))
                     .addStatement("throw new $T($S)", IllegalArgumentException.class,
                         String.format("%s must match the pattern `%s'", stringParameter.getName(),
                             patternDomain.getPattern()))
