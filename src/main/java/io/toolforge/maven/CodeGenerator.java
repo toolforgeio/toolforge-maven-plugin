@@ -135,7 +135,8 @@ public class CodeGenerator {
   }
 
   protected FieldSpec generateVariableField(ContainerVersionVariable variable) {
-    return FieldSpec.builder(String.class, variable.getName(), Modifier.PUBLIC)
+    return FieldSpec.builder(String.class,
+        CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, variable.getName()), Modifier.PUBLIC)
         .initializer(CodeBlock.of("$S", variable.getDefault()))
         .addAnnotation(AnnotationSpec.builder(EnvironmentParameter.class)
             .addMember("variableName", "$S", variable.getName())
@@ -145,7 +146,8 @@ public class CodeGenerator {
   }
 
   protected FieldSpec generateSecretField(ContainerVersionSecret variable) {
-    return FieldSpec.builder(String.class, variable.getName(), Modifier.PUBLIC)
+    return FieldSpec.builder(String.class,
+        CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, variable.getName()), Modifier.PUBLIC)
         .addAnnotation(AnnotationSpec.builder(EnvironmentParameter.class)
             .addMember("variableName", "$S", variable.getName())
             .addMember("required", "$L", variable.getRequired())

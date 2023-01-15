@@ -35,14 +35,14 @@ public final class Configuration {
       required = true,
       description = "This is variable 1."
   )
-  public String EXAMPLE_VARIABLE_1 = "hello";
+  public String exampleVariable1 = "hello";
 
   @EnvironmentParameter(
       variableName = "EXAMPLE_SECRET_1",
       required = false,
       description = "This is secret 1."
   )
-  public String EXAMPLE_SECRET_1;
+  public String exampleSecret1;
 
   @OptionParameter(
       longName = "exampleBoolean",
