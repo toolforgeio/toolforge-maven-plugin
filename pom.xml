@@ -61,7 +61,7 @@
         <maven.version>3.8.7</maven.version>
         <maven-plugin.version>3.7.1</maven-plugin.version>
         
-        <toolforge.version>0.0.28</toolforge.version>
+        <toolforge.version>0.0.35</toolforge.version>
         <toolforge4j.version>0.0.0</toolforge4j.version>
         <javapoet.version>1.13.0</javapoet.version>
         <jackson.version>2.13.4</jackson.version>
